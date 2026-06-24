@@ -151,11 +151,49 @@ if __name__ == "__main__":
         urls = list(ex.map(write_page, tasks))
     
     # Sitemap with 25,000 URLs
-    with open("public/sitemap.xml", "w") as f:
-        f.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
-        for u in urls:
-            f.write(f'<url><loc>{u}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>')
-        f.write('</urlset>')
+    # 1. Build Sitemap
+with open("public/sitemap.xml", "w") as f:
+    f.write('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    for u in urls:
+        f.write(f'<url><loc>{u}</loc><changefreq>daily</changefreq><priority>1.0</priority></url>')
+    f.write('</urlset>')
+
+# 2. Build INDEX.HTML (This fixes the 404)
+index_html_content = f'''<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIFA 2026 Ultimate Ticket & Gear Hub</title>
+<style>
+body{{background:#0a0f1e;color:#f8fafc;font-family:system-ui;padding:40px;}}
+.container{{max-width:1200px;margin:auto;}}
+h1{{font-size:3rem;background:linear-gradient(135deg,#38bdf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;margin:30px 0;}}
+.card{{background:#1e293b;padding:18px;border-radius:12px;border:1px solid #334155;}}
+.card a{{color:#38bdf8;text-decoration:none;font-weight:600;}}
+.card a:hover{{text-decoration:underline;}}
+.footer{{margin-top:40px;color:#64748b;border-top:1px solid #1e293b;padding-top:20px;text-align:center;}}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🏆 FIFA 2026 World Cup</h1>
+    <p>Find tickets, jerseys, and travel gear for every match. <strong>{len(urls)}</strong> pages indexed.</p>
+    <div class="grid">
+'''
+# Add first 200 pages as clickable links (to keep the page fast)
+for u in urls[:200]:
+    title = u.split('/')[-1].replace('.html', '').replace('-', ' ').title()
+    index_html_content += f'<div class="card"><a href="{u}">{title}</a></div>'
+
+index_html_content += f'''
+    </div>
+    <div class="footer">⚡ All 25,000+ matches covered. Amazon Associate ID: {AMAZON_TAG}</div>
+</div>
+</body>
+</html>'''
+
+with open("public/index.html", "w", encoding="utf-8") as f:
+    f.write(index_html_content)
     
     with open("public/robots.txt", "w") as f:
         f.write("User-agent: *\nAllow: /\nSitemap: https://fifa-blitz.vercel.app/sitemap.xml")
