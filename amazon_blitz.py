@@ -76,6 +76,7 @@ def main():
                     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="google-site-verification" content="Id9ipBDvGsTp1XPX2F37iuV-hgFMh5yaeLNhJBqsM9o" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy {team_a} vs {team_b} Tickets & Gear in {city['name']} | FIFA 2026</title>
